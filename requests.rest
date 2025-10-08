@@ -1,0 +1,45 @@
+### 
+
+POST http://localhost:4000/register
+Content-Type: application/json
+
+{
+  "name": "Osama Bin Russell",
+  "email": "mercaeda1@example.com",
+  "password": "abc"
+}
+
+### -> Get user data without token
+GET http://localhost:3000/users
+
+### -> Get user data with valid token
+GET http://localhost:3000/usersWithToken
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lcmNhZWRhMUBleGFtcGxlLmNvbSIsImlhdCI6MTc1OTkzOTQ1OSwiZXhwIjoxNzU5OTM5NDc5fQ.UwvWtghTSqZDepMFyupr12cucISi5ukd4mxxZONQKOI
+
+### -> Get new access token with refresh token
+
+POST http://localhost:4000/token
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtZXJjYWVkYTFAZXhhbXBsZS5jb20iLCJpYXQiOjE3NTk5Mzk0MjV9.VYDNrfvI_81PAQCrbTluLNfoNLImXI0emUkeMPZyqNk"
+}
+
+### -> Delete refresh token on logout
+
+DELETE http://localhost:4000/logout
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJAZW1haWwuY29tIiwicGFzc3dvcmQiOiJhYmMiLCJpYXQiOjE3NTk5MzE0NTB9.TpIDr3OfSL_cm8qS03EfgD-Imo10mzvhbB4NFrO0e0o"
+}
+
+### -> Login to get access and refresh tokens
+
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+  "email": "mercaeda1@example.com",
+  "password": "abc"
+}
