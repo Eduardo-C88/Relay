@@ -81,7 +81,7 @@ app.get('/users', async (req, res) => {
 
 app.get('/usersWithToken', authenticateToken, async (req, res) => {
     //res.json(users.filter(user => user.email === req.user.email));
-    const result = await pool.query('SELECT name, email FROM users WHERE email = $1', [req.user.email]);
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [req.user.email]);
     res.json(result.rows);
 })
 
