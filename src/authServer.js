@@ -21,9 +21,10 @@ app.post('/register', async (req, res) => {
       return res.status(400).send('Name, email, and password required');
   
     try {
-      const hashed = await bcrypt.hash(password, 10);
+      //const hashed = await bcrypt.hash(password, 10);
+      const hashed = password; // For simplicity, not hashing in this example
       await pool.query(
-        'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)',
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
         [name, email, hashed]
       );
       res.status(201).send('User registered');
@@ -64,7 +65,8 @@ app.post('/login', async (req, res) => {
     if (!user) return res.status(400).json({ message: 'User not found' });
   
     // 2. Verify password
-    const valid = await bcrypt.compare(password, user.password_hash);
+    //const valid = await bcrypt.compare(password, user.password);
+    const valid = password === user.password; // For simplicity, not hashing in this example
     if (!valid) return res.status(403).json({ message: 'Invalid password' });
 
     // 3. Generate tokens

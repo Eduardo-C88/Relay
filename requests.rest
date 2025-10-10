@@ -4,17 +4,39 @@ POST http://localhost:4000/register
 Content-Type: application/json
 
 {
-  "name": "Osama Bin Russell",
-  "email": "mercaeda1@example.com",
+  "name": "Jack",
+  "email": "jack@example.com",
   "password": "abc"
 }
+
+### -> Update extra user info (user identifier on th URL)
+
+PUT http://localhost:3000/users/5/profile
+Content-Type: application/json
+
+{
+  "course_id": 1,
+  "university_id": 1,
+  "address": "123 Main St, City, Country",
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "role_id": 2
+}
+
+### -> Clear all tables data
+
+POST http://localhost:3000/clear
+
+### -> Clear users data
+
+POST http://localhost:3000/clear/users
 
 ### -> Get user data without token
 GET http://localhost:3000/users
 
 ### -> Get user data with valid token
 GET http://localhost:3000/usersWithToken
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lcmNhZWRhMUBleGFtcGxlLmNvbSIsImlhdCI6MTc1OTkzOTQ1OSwiZXhwIjoxNzU5OTM5NDc5fQ.UwvWtghTSqZDepMFyupr12cucISi5ukd4mxxZONQKOI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYwMDkwNjUyLCJleHAiOjE3NjAwOTE1NTJ9.Fn84YOTv9P20JdPTa-cpaTfPcvTRmu_Cp9vKzDZVdSI
 
 ### -> Get new access token with refresh token
 
@@ -22,7 +44,7 @@ POST http://localhost:4000/token
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtZXJjYWVkYTFAZXhhbXBsZS5jb20iLCJpYXQiOjE3NTk5Mzk0MjV9.VYDNrfvI_81PAQCrbTluLNfoNLImXI0emUkeMPZyqNk"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGljZUBleGFtcGxlLmNvbSIsImlhdCI6MTc2MDA4NzE1OX0.WvFS0dp5fhP9JiHBNBsHCDQBzG36IJU5NkArF9hK9jE"
 }
 
 ### -> Delete refresh token on logout
@@ -31,7 +53,7 @@ DELETE http://localhost:4000/logout
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJAZW1haWwuY29tIiwicGFzc3dvcmQiOiJhYmMiLCJpYXQiOjE3NTk5MzE0NTB9.TpIDr3OfSL_cm8qS03EfgD-Imo10mzvhbB4NFrO0e0o"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGljZUBleGFtcGxlLmNvbSIsImlhdCI6MTc2MDA4NzE1OX0.WvFS0dp5fhP9JiHBNBsHCDQBzG36IJU5NkArF9hK9jE"
 }
 
 ### -> Login to get access and refresh tokens
@@ -40,6 +62,6 @@ POST http://localhost:4000/login
 Content-Type: application/json
 
 {
-  "email": "mercaeda1@example.com",
+  "email": "jack@example.com",
   "password": "abc"
 }
