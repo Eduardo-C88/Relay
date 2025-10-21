@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "devStart": "nodemon server.js",
-    "devStartAuth": "nodemon authServer.js",
-    "start": "node src/server.js",
-    "start:auth": "node src/authServer.js",
-    "test": "jest --coverage"
+    "devStartAuth": "nodemon authServer.js"
   },
   "keywords": [],
   "author": "",
@@ -23,8 +21,6 @@
   },
   "devDependencies": {
     "eslint": "^9.38.0",
-    "jest": "^30.2.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.1.4"
+    "nodemon": "^3.1.10"
   }
 }
