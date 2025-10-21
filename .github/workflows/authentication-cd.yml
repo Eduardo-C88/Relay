@@ -22,19 +22,39 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels)
-        id: meta
+      # ---------- AUTH SERVER ----------
+      - name: Extract metadata (Auth)
+        id: meta-auth
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/relay-auth
+          tags: latest
 
-      - name: Build and push Docker image
+      - name: Build and push Auth Server
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ./Dockerfile.auth
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-auth.outputs.tags }}
+          labels: ${{ steps.meta-auth.outputs.labels }}
+
+      # ---------- APP SERVER ----------
+      - name: Extract metadata (App)
+        id: meta-app
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/relay-app
+          tags: latest
+
+      - name: Build and push App Server
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.server
+          push: true
+          tags: ${{ steps.meta-app.outputs.tags }}
+          labels: ${{ steps.meta-app.outputs.labels }}
 
       - name: Logout from Docker Hub
         run: docker logout
