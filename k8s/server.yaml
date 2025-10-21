@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app-server
-          image: your-dockerhub-user/relay-app:latest
+          image: ed18c/relay-app:latest
           ports:
             - containerPort: 3000
           env:
@@ -26,22 +26,22 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: postgres-config
-                  key: postgres-url
+                  key: DATABASE_HOST
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: postgres-user
+                  key: DATABASE_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: postgres-password
+                  key: DATABASE_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: postgres-db
+                  key: DATABASE_DB
 ---
 apiVersion: v1
 kind: Service
