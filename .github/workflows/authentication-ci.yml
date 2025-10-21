@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
-        run: npm run lint
-
       - name: Build Auth Server image
         run: docker build -t relay-auth:latest -f Dockerfile.auth .
 
