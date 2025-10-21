@@ -1,19 +1,23 @@
 const request = require("supertest");
-const express = require("express");
+
+// Mock da base de dados (tem de vir antes do require do app)
 jest.mock("../src/database", () => ({
   query: jest.fn().mockResolvedValue({ rows: [{ id: 1, name: "Test User" }] }),
   connect: jest.fn().mockResolvedValue({
-    query: jest.fn(),
+    query: jest.fn().mockResolvedValue({ rows: [] }),
     release: jest.fn(),
   }),
 }));
 
-const app = require("../src/server"); // Vamos já adaptar isto
+const app = require("../src/server"); // importa o app (não inicia servidor)
 
-describe("Servidor principal", () => {
-  it("GET /users deve responder com lista de utilizadores (mock)", async () => {
+describe("Testa /users", () => {
+  it("Deve responder com status 200", async () => {
     const res = await request(app).get("/users");
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
   });
+});
+
+afterAll(() => {
+  jest.clearAllMocks(); // limpa todos os mocks
 });

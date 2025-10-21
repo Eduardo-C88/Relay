@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25.49% </span>
+                <span class="strong">25.92% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/51</span>
+                <span class='fraction'>14/54</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">5.26% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>1/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.88% </span>
+                <span class="strong">29.78% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>13/45</span>
+                <span class='fraction'>14/47</span>
             </div>
         
             
@@ -146,7 +146,14 @@
 <a name='L81'></a><a href='#L81'>81</a>
 <a name='L82'></a><a href='#L82'>82</a>
 <a name='L83'></a><a href='#L83'>83</a>
-<a name='L84'></a><a href='#L84'>84</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -209,15 +216,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -229,97 +238,109 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">require('dotenv').config();
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">require("dotenv").config();
 &nbsp;
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const pool = require('./database');
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const pool = require("./database");
 &nbsp;
 const app = express();
 app.use(express.json());
 &nbsp;
-let refreshTokens = []
+let refreshTokens = [];
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateAccessToken(</span>user) {
-<span class="cstat-no" title="statement not covered" >    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })</span>
+<span class="cstat-no" title="statement not covered" >  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });</span>
 }
 &nbsp;
-app.post('auth/register', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-    const { name, email, password } = <span class="cstat-no" title="statement not covered" >req.body;</span>
-  
-<span class="cstat-no" title="statement not covered" >    if (!name || !email || !password)</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(400).send('Name, email, and password required');</span>
-  
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      //const hashed = await bcrypt.hash(password, 10);
-      const hashed = <span class="cstat-no" title="statement not covered" >password;</span> // For simplicity, not hashing in this example
-<span class="cstat-no" title="statement not covered" >      await pool.query(</span>
-        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
-        [name, email, hashed]
-      );
-<span class="cstat-no" title="statement not covered" >      res.status(201).send('User registered');</span>
-    } catch (err) {
-<span class="cstat-no" title="statement not covered" >      console.error(err);</span>
-<span class="cstat-no" title="statement not covered" >      if (err.code === '23505') {</span>
-<span class="cstat-no" title="statement not covered" >        return res.status(409).send('Email already exists');</span>
-      }
-<span class="cstat-no" title="statement not covered" >      res.sendStatus(500);</span>
+app.post("auth/register", <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+  const { name, email, password } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (!name || !email || !password)</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(400).send("Name, email, and password required");</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    //const hashed = await bcrypt.hash(password, 10);
+    const hashed = <span class="cstat-no" title="statement not covered" >password;</span> // For simplicity, not hashing in this example
+<span class="cstat-no" title="statement not covered" >    await pool.query(</span>
+      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
+      [name, email, hashed]
+    );
+<span class="cstat-no" title="statement not covered" >    res.status(201).send("User registered");</span>
+  } catch (err) {
+<span class="cstat-no" title="statement not covered" >    console.error(err);</span>
+<span class="cstat-no" title="statement not covered" >    if (err.code === "23505") {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(409).send("Email already exists");</span>
     }
+<span class="cstat-no" title="statement not covered" >    res.sendStatus(500);</span>
+  }
+});
+&nbsp;
+app.post("auth/token", <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+  const refreshToken = <span class="cstat-no" title="statement not covered" >req.body.token;</span>
+<span class="cstat-no" title="statement not covered" >  if (refreshToken == null) <span class="cstat-no" title="statement not covered" >return res.sendStatus(401);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (!refreshTokens.includes(refreshToken)) <span class="cstat-no" title="statement not covered" >return res.sendStatus(403);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, <span class="fstat-no" title="function not covered" >(e</span>rr, user) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return res.sendStatus(403);</span></span>
+    const accessToken = <span class="cstat-no" title="statement not covered" >generateAccessToken({ email: user.email });</span>
+<span class="cstat-no" title="statement not covered" >    res.json({ accessToken: accessToken });</span>
   });
+});
 &nbsp;
-app.post('auth/token', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-    const refreshToken = <span class="cstat-no" title="statement not covered" >req.body.token</span>
-<span class="cstat-no" title="statement not covered" >    if(refreshToken == null) <span class="cstat-no" title="statement not covered" >return res.sendStatus(401)</span></span>
+app.delete("auth/logout", <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+<span class="cstat-no" title="statement not covered" >  refreshTokens = refreshTokens.filter(<span class="fstat-no" title="function not covered" >(t</span>oken) =&gt; <span class="cstat-no" title="statement not covered" >token !== req.body.token)</span>;</span>
+<span class="cstat-no" title="statement not covered" >  res.sendStatus(204);</span>
+});
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if(!refreshTokens.includes(refreshToken)) <span class="cstat-no" title="statement not covered" >return res.sendStatus(403)</span></span>
+app.post("auth/login", <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+  // Authenticate User
+  const { email, password } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, <span class="fstat-no" title="function not covered" >(e</span>rr, user) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        if(err) <span class="cstat-no" title="statement not covered" >return res.sendStatus(403)</span></span>
-        const accessToken = <span class="cstat-no" title="statement not covered" >generateAccessToken({ email: user.email })</span>
-<span class="cstat-no" title="statement not covered" >        res.json({ accessToken: accessToken })</span>
-    })
-})
+  // 1. Find user
+  const userResult = <span class="cstat-no" title="statement not covered" >await pool.query("SELECT * FROM users WHERE email = $1", [</span>
+    email,
+  ]);
+  const user = <span class="cstat-no" title="statement not covered" >userResult.rows[0];</span>
+<span class="cstat-no" title="statement not covered" >  if (!user) <span class="cstat-no" title="statement not covered" >return res.status(400).json({ message: "User not found" });</span></span>
 &nbsp;
-app.delete('auth/logout', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-<span class="cstat-no" title="statement not covered" >    refreshTokens = refreshTokens.filter(<span class="fstat-no" title="function not covered" >to</span>ken =&gt; <span class="cstat-no" title="statement not covered" >token !== req.body.token)</span></span>
-<span class="cstat-no" title="statement not covered" >    res.sendStatus(204)</span>
-})
+  // 2. Verify password
+  //const valid = await bcrypt.compare(password, user.password);
+  const valid = <span class="cstat-no" title="statement not covered" >password === user.password;</span> // For simplicity, not hashing in this example
+<span class="cstat-no" title="statement not covered" >  if (!valid) <span class="cstat-no" title="statement not covered" >return res.status(403).json({ message: "Invalid password" });</span></span>
 &nbsp;
-app.post('auth/login', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-    // Authenticate User
-    const { email, password } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+  // 3. Generate tokens
+  const payload = <span class="cstat-no" title="statement not covered" >{ id: user.id, email: user.email };</span>
 &nbsp;
-    // 1. Find user
-    const userResult = <span class="cstat-no" title="statement not covered" >await pool.query('SELECT * FROM users WHERE email = $1', [email]);</span>
-    const user = <span class="cstat-no" title="statement not covered" >userResult.rows[0];</span>
-<span class="cstat-no" title="statement not covered" >    if (!user) <span class="cstat-no" title="statement not covered" >return res.status(400).json({ message: 'User not found' });</span></span>
-  
-    // 2. Verify password
-    //const valid = await bcrypt.compare(password, user.password);
-    const valid = <span class="cstat-no" title="statement not covered" >password === user.password;</span> // For simplicity, not hashing in this example
-<span class="cstat-no" title="statement not covered" >    if (!valid) <span class="cstat-no" title="statement not covered" >return res.status(403).json({ message: 'Invalid password' });</span></span>
+  const accessToken = <span class="cstat-no" title="statement not covered" >generateAccessToken(payload);</span>
+  const refreshToken = <span class="cstat-no" title="statement not covered" >jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);</span>
 &nbsp;
-    // 3. Generate tokens
-    const payload = <span class="cstat-no" title="statement not covered" >{ id: user.id, email: user.email };</span>
+<span class="cstat-no" title="statement not covered" >  refreshTokens.push(refreshToken);</span>
+  // Store refreshToken in DB or memory
 &nbsp;
-    const accessToken = <span class="cstat-no" title="statement not covered" >generateAccessToken(payload);</span>
-    const refreshToken = <span class="cstat-no" title="statement not covered" >jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);</span>
-    
-<span class="cstat-no" title="statement not covered" >    refreshTokens.push(refreshToken);</span>
-    // Store refreshToken in DB or memory
+<span class="cstat-no" title="statement not covered" >  res.json({ accessToken: accessToken, refreshToken: refreshToken });</span>
+});
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    res.json({ accessToken: accessToken, refreshToken: refreshToken });</span>
-})
+<span class="missing-if-branch" title="if path not taken" >I</span>if (require.main === module) {
+<span class="cstat-no" title="statement not covered" >  app.listen(4000, <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >console.log("Server running on port 4000"))</span>;</span>
+}
 &nbsp;
-app.listen(4000)</pre></td></tr></table></pre>
+module.exports = app;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-21T19:21:39.332Z
+                at 2025-10-21T19:57:35.321Z
             </div>
         <script src="prettify.js"></script>
         <script>
