@@ -50,11 +50,20 @@ spec:
           image: postgres:15
           env:
             - name: POSTGRES_USER
-              value: "user"      # Specify a username for the DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-user
             - name: POSTGRES_PASSWORD
-              value: "password" # Specify a password for the DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-password
             - name: POSTGRES_DB
-              value: "relaydb"   # Specify a database name
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-db
           ports:
             - containerPort: 5432
           volumeMounts:
