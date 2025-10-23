@@ -20,26 +20,31 @@ spec:
           ports:
             - containerPort: 4000
           env:
-            - name: DATABASE_URL
+            - name: DATABASE_HOST
               valueFrom:
                 configMapKeyRef:
                   name: postgres-config
-                  key: DATABASE_HOST
-            - name: POSTGRES_USER
+                  key: postgres-host
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres-port
+            - name: DATABASE_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: DATABASE_USER
-            - name: POSTGRES_PASSWORD
+                  key: postgres-user
+            - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: DATABASE_PASSWORD
-            - name: POSTGRES_DB
+                  key: postgres-password
+            - name: DATABASE_NAME
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: DATABASE_DB
+                  key: postgres-db
 ---
 apiVersion: v1
 kind: Service
@@ -50,8 +55,8 @@ metadata:
 spec:
   selector:
     app: auth
+  type: NodePort
   ports:
     - port: 4000
       targetPort: 4000
-      protocol: TCP
-  type: ClusterIP
+      nodePort: 30008
