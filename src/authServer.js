@@ -14,7 +14,7 @@ function generateAccessToken(user) {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
 
-app.post('auth/register', async (req, res) => {
+app.post('/auth/register', async (req, res) => {
     const { name, email, password } = req.body;
   
     if (!name || !email || !password)
@@ -37,7 +37,7 @@ app.post('auth/register', async (req, res) => {
     }
   });
 
-app.post('auth/token', async (req, res) => {
+app.post('/auth/token', async (req, res) => {
     const refreshToken = req.body.token
     if(refreshToken == null) return res.sendStatus(401)
 
@@ -50,12 +50,12 @@ app.post('auth/token', async (req, res) => {
     })
 })
 
-app.delete('auth/logout', async (req, res) => {
+app.delete('/auth/logout', async (req, res) => {
     refreshTokens = refreshTokens.filter(token => token !== req.body.token)
     res.sendStatus(204)
 })
 
-app.post('auth/login', async (req, res) => {
+app.post('/auth/login', async (req, res) => {
     // Authenticate User
     const { email, password } = req.body;
 
