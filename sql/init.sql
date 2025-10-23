@@ -45,6 +45,7 @@ CREATE TABLE "resources" (
   "title" varchar(150),
   "description" text,
   "status_id" int,
+  "price" float,
   "created_at" timestamp DEFAULT (now())
 );
 
