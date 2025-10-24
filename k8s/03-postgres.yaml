@@ -1,29 +1,29 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: postgres-pv-volume
+  name: postgres-pv
+  #namespace: relay
   labels:
     type: local
-    app: postgres
+    app: postgresql
 spec:
   storageClassName: manual
   capacity:
     storage: 5Gi
-  accessModes:
-    - ReadWriteMany
+  accessModes: [ReadWriteOnce]
   hostPath:
     path: "/mnt/data"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pv-claim
+  name: postgres-pvc
+  namespace: relay
   labels:
-    app: postgres
+    app: postgresql
 spec:
   storageClassName: manual
-  accessModes:
-    - ReadWriteMany
+  accessModes: [ReadWriteOnce]
   resources:
     requests:
       storage: 5Gi
@@ -32,10 +32,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgresql
+  namespace: relay
   labels:
     app: postgresql
 spec:
-  serviceName: "postgresql"
+  serviceName: "postgresql-service"
   replicas: 1
   selector:
     matchLabels:
@@ -61,8 +62,8 @@ spec:
                   key: postgres-password
             - name: POSTGRES_DB
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
+                configMapKeyRef:
+                  name: postgres-config
                   key: postgres-db
           ports:
             - containerPort: 5432
@@ -72,12 +73,13 @@ spec:
       volumes:
         - name: postgresql-data
           persistentVolumeClaim:
-            claimName: postgres-pv-claim
+            claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: postgresql-service
+  namespace: relay
   labels:
     app: postgresql
 spec:

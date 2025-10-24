@@ -1,24 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-server
+  name: auth-server
+  namespace: relay
   labels:
-    app: app
+    app: auth
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: auth
   template:
     metadata:
       labels:
-        app: app
+        app: auth
     spec:
       containers:
-        - name: app-server
-          image: ed18c/relay-app:latest
+        - name: auth-server
+          image: ed18c/relay-auth:latest
           ports:
-            - containerPort: 3000
+            - containerPort: 4000
           env:
             - name: ACCESS_TOKEN_SECRET
               valueFrom:
@@ -52,21 +53,37 @@ spec:
                   key: postgres-password
             - name: DATABASE_NAME
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
+                configMapKeyRef:
+                  name: postgres-config
                   key: postgres-db
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-service
+  name: auth-service
+  namespace: relay
   labels:
-    app: app
+    app: auth
 spec:
+  type: ClusterIP
   selector:
-    app: app
-  type: NodePort
+    app: auth
   ports:
-    - port: 3000
-      targetPort: 3000
-      nodePort: 30007
+    - port: 4000
+      targetPort: 4000
+      protocol: TCP
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: auth-service
+#   labels:
+#     app: auth
+# spec:
+#   selector:
+#     app: auth
+#   type: NodePort
+#   ports:
+#     - port: 4000
+#       targetPort: 4000
+#       nodePort: 30008
+

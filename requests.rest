@@ -36,15 +36,15 @@ GET http://localhost:3000/users
 
 ### -> Get user data with valid token
 GET http://localhost:3000/usersWithToken
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYwMDkwNjUyLCJleHAiOjE3NjAwOTE1NTJ9.Fn84YOTv9P20JdPTa-cpaTfPcvTRmu_Cp9vKzDZVdSI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxLCJleHAiOjE3NjEyMzU0NDF9.OFRSjwxyUhrUsPT0a9AaQKDUQ3dU518A6XlQXzWZEec
 
 ### -> Get new access token with refresh token
 
-POST http://localhost:4000/token
+POST http://localhost:4000/auth/token
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGljZUBleGFtcGxlLmNvbSIsImlhdCI6MTc2MDA4NzE1OX0.WvFS0dp5fhP9JiHBNBsHCDQBzG36IJU5NkArF9hK9jE"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxfQ.JogVDLt-8yEvheYVupmu16mCZQgKAj2uiWrWcN2HKNc"
 }
 
 ### -> Delete refresh token on logout
@@ -53,12 +53,12 @@ DELETE http://localhost:4000/logout
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGljZUBleGFtcGxlLmNvbSIsImlhdCI6MTc2MDA4NzE1OX0.WvFS0dp5fhP9JiHBNBsHCDQBzG36IJU5NkArF9hK9jE"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxfQ.JogVDLt-8yEvheYVupmu16mCZQgKAj2uiWrWcN2HKNc"
 }
 
 ### -> Login to get access and refresh tokens
 
-POST http://localhost:4000/login
+POST http://localhost:4000/auth/login
 Content-Type: application/json
 
 {
