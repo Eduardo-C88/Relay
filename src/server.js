@@ -20,6 +20,14 @@ function authenticateToken(req, res, next) {
     })
 }
 
+// Health check endpoint for Kubernetes probes
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString()
+    });
+  });
+
 //clear all tables
 app.post('/clear', async (req, res) => {
     const client = await pool.connect();

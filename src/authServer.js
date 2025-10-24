@@ -14,6 +14,15 @@ function generateAccessToken(user) {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
 
+// Health check endpoint for Kubernetes probes
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString()
+  });
+});
+
+
 app.post('/auth/register', async (req, res) => {
     const { name, email, password } = req.body;
   
