@@ -104,23 +104,23 @@ describe('App Server API (/api)', () => {
     });
 
     // --- User Endpoint Tests ---
-    it('GET /api/users/me -> should fail with 401 without a token', async () => {
-        const res = await request.get('/api/users/me');
+    it('GET /users/me -> should fail with 401 without a token', async () => {
+        const res = await request.get('/users/me');
         expect(res.statusCode).toEqual(401);
     });
 
-    it('GET /api/users/me -> should return user data with a valid token', async () => {
+    it('GET /users/me -> should return user data with a valid token', async () => {
         const res = await request
-            .get('/api/users/me')
+            .get('/users/me')
             .set('Authorization', `Bearer ${testToken}`);
         
         expect(res.statusCode).toEqual(200);
         expect(res.body.email).toEqual('test@example.com');
     });
 
-    it('PUT /api/users/:id/profile -> should update the user profile', async () => {
+    it('PUT /users/:id/profile -> should update the user profile', async () => {
         const res = await request
-            .put(`/api/users/${testUserId}/profile`)
+            .put(`/users/${testUserId}/profile`)
             .set('Authorization', `Bearer ${testToken}`)
             .send({
                 course_id: 1,
@@ -132,10 +132,10 @@ describe('App Server API (/api)', () => {
         expect(res.text).toContain('Profile updated successfully');
     });
 
-    it('PUT /api/users/:id/profile -> should fail with 403 if user ID is wrong', async () => {
+    it('PUT /users/:id/profile -> should fail with 403 if user ID is wrong', async () => {
         const wrongId = testUserId + 10; // A different user ID
         const res = await request
-            .put(`/api/users/${wrongId}/profile`) // Trying to update another user
+            .put(`/users/${wrongId}/profile`) // Trying to update another user
             .set('Authorization', `Bearer ${testToken}`)
             .send({ address: "456 Hacker Ave" });
         
@@ -143,17 +143,17 @@ describe('App Server API (/api)', () => {
     });
 
     // --- Resource Endpoint Tests ---
-    it('POST /api/resources -> should fail with 401 without a token', async () => {
+    it('POST /resources -> should fail with 401 without a token', async () => {
         const res = await request
-            .post('/api/resources')
+            .post('/resources')
             .send({ title: "Test Book", category_id: 1, status_id: 1 });
             
         expect(res.statusCode).toEqual(401);
     });
 
-    it('POST /api/resources -> should create a resource with a valid token', async () => {
+    it('POST /resources -> should create a resource with a valid token', async () => {
         const res = await request
-            .post('/api/resources')
+            .post('/resources')
             .set('Authorization', `Bearer ${testToken}`)
             .send({
                 title: "My Test Book",
@@ -167,8 +167,8 @@ describe('App Server API (/api)', () => {
         expect(res.body).toHaveProperty('resourceId');
     });
 
-    it('GET /api/resources -> should list all resources', async () => {
-        const res = await request.get('/api/resources');
+    it('GET /resources -> should list all resources', async () => {
+        const res = await request.get('/resources');
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toBeGreaterThan(0);
         expect(res.body[0].title).toEqual('My Test Book');

@@ -62,7 +62,7 @@ jobs:
       
       - name: Run Unit and Integration Tests (Integrated Server Startup)
         run: |
-          # 1. Start Auth Server (3000) and App Server (3001) in the background.
+          # 1. Start Auth Server (4000) and App Server (3000) in the background.
           # Navigate to the directory containing the server files (e.g., 'src')
           # Replace 'src' with the actual directory name if different
           cd src 
@@ -78,11 +78,11 @@ jobs:
           trap 'kill $AUTH_PID $APP_PID' EXIT
           
           # 3. Wait for servers to be healthy. We use a longer timeout (90s).
-          echo "Waiting for Auth (3000) and App (3001) servers..."
-          npx wait-on tcp:3000 tcp:3001 -t 90000 || { 
+          echo "Waiting for Auth (4000) and App (3000) servers..."
+          npx wait-on tcp:4000 tcp:3000 -t 90000 || { 
             echo "--- Server Startup Timeout Failed ---"; 
-            echo "--- Auth Server Log (Port 3000) ---"; cat auth.log; 
-            echo "--- App Server Log (Port 3001) ---"; cat app.log; 
+            echo "--- Auth Server Log (Port 4000) ---"; cat auth.log; 
+            echo "--- App Server Log (Port 3000) ---"; cat app.log; 
             exit 1; 
           }
           echo "Servers ready. Running tests."
