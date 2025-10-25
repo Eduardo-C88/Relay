@@ -63,10 +63,10 @@ jobs:
       - name: Run Unit and Integration Tests (Integrated Server Startup)
         run: |
           # 1. Start Auth Server (3000) and App Server (3001) in the background.
-          # Redirect output to log files for debugging and capture their Process IDs (PIDs).
-          npm run start:auth > auth.log 2>&1 &
+          # NOTE: Changed script names from 'start:auth' to 'devStartAuth' and 'start:app' to 'devStart'.
+          npm run devStartAuth > auth.log 2>&1 &
           AUTH_PID=$!
-          npm run start:app > app.log 2>&1 &
+          npm run devStart > app.log 2>&1 &
           APP_PID=$!
           
           # 2. Use 'trap' to ensure the background servers are killed when this step exits, 
