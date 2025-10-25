@@ -4,22 +4,22 @@ metadata:
   name: relay-ingress
   namespace: relay
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
     - host: relay.local
       http:
         paths:
-          - path: /api
-            pathType: Prefix
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: app-service
                 port:
                   number: 3000
-          - path: /auth
-            pathType: Prefix
+          - path: /auth(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: auth-service

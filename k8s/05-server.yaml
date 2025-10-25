@@ -58,13 +58,13 @@ spec:
                   key: postgres-db
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 3000
             initialDelaySeconds: 5  # Wait 5 seconds before first check
             periodSeconds: 10       # Check every 10 seconds
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 3000
             initialDelaySeconds: 15 # Wait 15 seconds before first check
             periodSeconds: 20
