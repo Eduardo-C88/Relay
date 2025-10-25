@@ -58,40 +58,36 @@ jobs:
           PGPASSWORD: password
       # --- END OF FIX 1 ---
       
-      # --- FIX 2: START APPLICATION SERVERS IN THE BACKGROUND ---
+      # --- FIX 2: CONSOLIDATE SERVER STARTUP, WAIT, AND TEST INTO ONE STEP ---
       
-      - name: Start Auth Server (Port 3000 assumed)
-        # We run this in the background using '&'. The server needs the DB and Secret env vars.
-        run: npm run start:auth &
-        env:
-          DATABASE_HOST: localhost
-          DATABASE_USER: user
-          DATABASE_PASSWORD: password
-          DATABASE_NAME: relaydb
-          DATABASE_PORT: 5432
-          ACCESS_TOKEN_SECRET: test_access_secret_12345
-          REFRESH_TOKEN_SECRET: test_refresh_secret_12345
+      - name: Run Unit and Integration Tests (Integrated Server Startup)
+        run: |
+          # 1. Start Auth Server (3000) and App Server (3001) in the background.
+          # Redirect output to log files for debugging and capture their Process IDs (PIDs).
+          npm run start:auth > auth.log 2>&1 &
+          AUTH_PID=$!
+          npm run start:app > app.log 2>&1 &
+          APP_PID=$!
+          
+          # 2. Use 'trap' to ensure the background servers are killed when this step exits, 
+          # regardless of success or failure (critical for cleanup).
+          trap 'kill $AUTH_PID $APP_PID' EXIT
+          
+          # 3. Wait for servers to be healthy. We use a longer timeout (90s).
+          echo "Waiting for Auth (3000) and App (3001) servers..."
+          npx wait-on tcp:3000 tcp:3001 -t 90000 || { 
+            echo "--- Server Startup Timeout Failed ---"; 
+            echo "--- Auth Server Log (Port 3000) ---"; cat auth.log; 
+            echo "--- App Server Log (Port 3001) ---"; cat app.log; 
+            exit 1; 
+          }
+          echo "Servers ready. Running tests."
 
-      - name: Start App Server (Port 3001 assumed)
-        # We run this in the background using '&'. The server needs the DB env vars.
-        run: npm run start:app &
+          # 4. Run the tests. If the tests fail, the exit code will be preserved.
+          npm test
+          
         env:
-          DATABASE_HOST: localhost
-          DATABASE_USER: user
-          DATABASE_PASSWORD: password
-          DATABASE_NAME: relaydb
-          DATABASE_PORT: 5432
-
-      - name: Wait for servers to be healthy
-        # Use 'wait-on' (standard tool) to block until the servers are listening on ports 3000 and 3001.
-        run: npx wait-on tcp:3000 tcp:3001 -t 60000 
-      
-      # --- END OF FIX 2 ---
-
-      - name: Run Unit and Integration Tests
-        # The env block here is kept to ensure the test runner has access to credentials for any direct DB setup/teardown.
-        run: npm test
-        env:
+          # Define ALL necessary environment variables for both server startup and testing
           DATABASE_HOST: localhost 
           DATABASE_USER: user
           DATABASE_PASSWORD: password
@@ -100,6 +96,8 @@ jobs:
           
           ACCESS_TOKEN_SECRET: test_access_secret_12345
           REFRESH_TOKEN_SECRET: test_refresh_secret_12345
+
+      # --- END OF FIX 2 (Removed previous 3 separate steps) ---
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
