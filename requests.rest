@@ -1,18 +1,108 @@
-### 
+----------------------------------------------------------------------
+A. AUTHENTICATION SERVICE ENDPOINTS (Port 4000 via /auth)
+----------------------------------------------------------------------
 
-POST http://localhost:4000/auth/register
+A.1. Register a New User
+
+Target: Auth Service
+
+POST http://relay.local/auth/register
 Content-Type: application/json
 
 {
-  "name": "Jack",
-  "email": "jack@example.com",
-  "password": "abc"
+"name": "Jack Tester",
+"email": "jack_test@example.com",
+"password": "abc"
 }
 
-### -> Update extra user info (user identifier on th URL)
+A.2. Login to get Access and Refresh Tokens
 
-PUT http://localhost:3000/users/5/profile
+Target: Auth Service
+
+IMPORTANT: Use the credentials from the user registered above
+
+POST http://relay.local/auth/login
 Content-Type: application/json
+
+{
+"email": "jack_test@example.com",
+"password": "abc"
+}
+
+Save the access token for use in subsequent requests (e.g., {ACCESS_TOKEN})
+
+Save the user ID for profile updates (e.g., {USER_ID})
+
+A.3. Get a New Access Token using Refresh Token
+
+Target: Auth Service
+
+POST http://relay.local/auth/token
+Content-Type: application/json
+
+{
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMzgwNTc1fQ.MOPuw7P0tizZ-VKId_4FH3a5BNI-1FvXf-diDAfMZUw"
+}
+
+Replace the token value above with a valid refresh token received during login.
+
+A.4. Delete Refresh Token on Logout
+
+Target: Auth Service
+
+DELETE http://relay.local/auth/logout
+Content-Type: application/json
+
+{
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxfQ.JogVDLt-8yEvheYVupmu16mCZQgKAj2uiWrWcN2HKNc"
+}
+
+Replace the token value above with the refresh token to be revoked.
+
+----------------------------------------------------------------------
+B. APPLICATION SERVICE ENDPOINTS (Port 3000 via /api)
+----------------------------------------------------------------------
+
+B.1. Get Health Status
+
+Target: App Service
+
+GET http://relay.local/api/health
+
+B.2. Clear ALL tables data (DEV/TEST ONLY)
+
+Target: App Service
+
+POST http://relay.local/api/clear
+
+B.3. Clear ONLY users data (DEV/TEST ONLY)
+
+Target: App Service
+
+POST http://relay.local/api/clear/users
+
+B.4. Get All Users (DANGEROUS / DEVELOPMENT ONLY)
+
+Target: App Service
+
+GET http://relay.local/api/users
+
+B.5. Get Authenticated User's Profile (Formerly /usersWithToken)
+
+Target: App Service
+
+GET http://relay.local/api/users/me
+Authorization: Bearer {ACCESS_TOKEN}
+
+B.6. Update User Profile (Self-Update)
+
+Target: App Service
+
+NOTE: Replace '5' in the URL with the actual user ID (e.g., {USER_ID})
+
+PUT http://relay.local/api/users/5/profile
+Content-Type: application/json
+Authorization: Bearer {ACCESS_TOKEN}
 
 {
   "course_id": 1,
@@ -23,45 +113,85 @@ Content-Type: application/json
   "role_id": 2
 }
 
-### -> Clear all tables data
+B.7. Create a New Resource
 
-POST http://localhost:3000/clear
+Target: App Service
 
-### -> Clear users data
-
-POST http://localhost:3000/clear/users
-
-### -> Get user data without token
-GET http://localhost:3000/users
-
-### -> Get user data with valid token
-GET http://localhost:3000/usersWithToken
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxLCJleHAiOjE3NjEyMzU0NDF9.OFRSjwxyUhrUsPT0a9AaQKDUQ3dU518A6XlQXzWZEec
-
-### -> Get new access token with refresh token
-
-POST http://localhost:4000/auth/token
+POST http://relay.local/api/resources
 Content-Type: application/json
+Authorization: Bearer {ACCESS_TOKEN}
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxfQ.JogVDLt-8yEvheYVupmu16mCZQgKAj2uiWrWcN2HKNc"
+  "title": "Introduction to Database Systems Textbook",
+  "description": "Used textbook for first-year students.",
+  "category_id": 1,
+  "status_id": 1,
+  "price": 50.00,
+  "image_urls": [
+    "https://www.google.com/search?q=http://example.com/images/book1.jpg",
+    "https://www.google.com/search?q=http://example.com/images/book2.jpg"
+  ]
 }
 
-### -> Delete refresh token on logout
+Save the resource ID for testing updates/deletion (e.g., {RESOURCE_ID})
 
-DELETE http://localhost:4000/logout
+B.8. List and Search Resources
+
+Target: App Service
+
+Filter by category_id=1, search for 'textbook', limit 5 results
+
+GET http://relay.local/api/resources?category_id=1&search=textbook&limit=5
+
+B.9. Get Specific Resource Details
+
+Target: App Service
+
+NOTE: Replace '1' with an actual resource ID (e.g., {RESOURCE_ID})
+
+GET http://relay.local/api/resources/1
+
+B.10. Update Resource Details (Must be the Owner)
+
+Target: App Service
+
+NOTE: Replace '1' with an actual resource ID (e.g., {RESOURCE_ID})
+
+PUT http://relay.local/api/resources/1
 Content-Type: application/json
+Authorization: Bearer {ACCESS_TOKEN}
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqYWNrQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxMjM0NTQxfQ.JogVDLt-8yEvheYVupmu16mCZQgKAj2uiWrWcN2HKNc"
+  "title": "Introduction to Database Systems (V2)",
+  "price": 45.00,
+  "status_id": 2
 }
 
-### -> Login to get access and refresh tokens
+B.11. Delete Resource (Must be the Owner)
 
-POST http://localhost:4000/auth/login
-Content-Type: application/json
+Target: App Service
 
-{
-  "email": "jack@example.com",
-  "password": "abc"
-}
+NOTE: Replace '1' with an actual resource ID (e.g., {RESOURCE_ID})
+
+DELETE http://relay.local/api/resources/1
+Authorization: Bearer {ACCESS_TOKEN}
+
+B.12. Get All Categories
+
+Target: App Service
+
+GET http://relay.local/api/categories
+
+B.13. Get All Universities
+
+Target: App Service
+
+GET http://relay.local/api/universities
+
+B.14. Get Courses by University ID
+
+Target: App Service
+
+NOTE: Replace '1' with an actual university ID
+
+GET http://relay.local/api/universities/1/courses
