@@ -40,21 +40,21 @@ afterAll(async () => {
 // --- Auth Server Tests (authServer.js) ---
 describe('Auth Server API (/auth)', () => {
 
-    it('POST /register -> should create a new user', async () => {
+    it('POST /auth/register -> should create a new user', async () => {
         const res = await authRequest
-            .post('/register')
+            .post('/auth/register')
             .send({
                 name: "Test User",
                 email: "test@example.com",
                 password: "password123"
             });
         expect(res.statusCode).toEqual(201);
-        expect(res.text).toContain("User registered successfully");
+        expect(res.text).toContain("User registered");
     });
 
-    it('POST /register -> should fail to create a duplicate user', async () => {
+    it('POST /auth/register -> should fail to create a duplicate user', async () => {
         const res = await authRequest
-            .post('/register')
+            .post('/auth/register')
             .send({
                 name: "Test User 2",
                 email: "test@example.com", // Same email
@@ -63,9 +63,9 @@ describe('Auth Server API (/auth)', () => {
         expect(res.statusCode).toEqual(409); // Conflict
     });
 
-    it('POST /login -> should login the user and return tokens', async () => {
+    it('POST /auth/login -> should login the user and return tokens', async () => {
         const res = await authRequest
-            .post('/login')
+            .post('/auth/login')
             .send({
                 email: "test@example.com",
                 password: "password123"
@@ -82,9 +82,9 @@ describe('Auth Server API (/auth)', () => {
         testUserId = payload.id;
     });
 
-    it('POST /login -> should fail with wrong password', async () => {
+    it('POST /auth/login -> should fail with wrong password', async () => {
         const res = await authRequest
-            .post('/login')
+            .post('/auth/login')
             .send({
                 email: "test@example.com",
                 password: "wrongpassword"
