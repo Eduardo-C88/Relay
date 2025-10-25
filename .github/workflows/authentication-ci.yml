@@ -46,28 +46,58 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # --- FIX 1: INITIALIZE THE TEST DATABASE SCHEMA ---
       - name: Install PostgreSQL Client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
       - name: Initialize Database Schema
-        # This runs your init.sql script against the test database
         run: psql -h localhost -p 5432 -U user -d relaydb -f sql/init.sql
         env:
-          # psql automatically uses this env var for the password
           PGPASSWORD: password
-
-      - name: Run Unit and Integration Tests
-        run: npm test
+      # --- END OF FIX 1 ---
+      
+      # --- FIX 2: START APPLICATION SERVERS IN THE BACKGROUND ---
+      
+      - name: Start Auth Server (Port 3000 assumed)
+        # We run this in the background using '&'. The server needs the DB and Secret env vars.
+        run: npm run start:auth &
         env:
-          DATABASE_HOST: localhost # The service container is mapped to localhost on the runner
+          DATABASE_HOST: localhost
           DATABASE_USER: user
           DATABASE_PASSWORD: password
           DATABASE_NAME: relaydb
-          DATABASE_PORT: 5432 # Must match the port mapping above
+          DATABASE_PORT: 5432
+          ACCESS_TOKEN_SECRET: test_access_secret_12345
+          REFRESH_TOKEN_SECRET: test_refresh_secret_12345
+
+      - name: Start App Server (Port 3001 assumed)
+        # We run this in the background using '&'. The server needs the DB env vars.
+        run: npm run start:app &
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_USER: user
+          DATABASE_PASSWORD: password
+          DATABASE_NAME: relaydb
+          DATABASE_PORT: 5432
+
+      - name: Wait for servers to be healthy
+        # Use 'wait-on' (standard tool) to block until the servers are listening on ports 3000 and 3001.
+        run: npx wait-on tcp:3000 tcp:3001 -t 60000 
+      
+      # --- END OF FIX 2 ---
+
+      - name: Run Unit and Integration Tests
+        # The env block here is kept to ensure the test runner has access to credentials for any direct DB setup/teardown.
+        run: npm test
+        env:
+          DATABASE_HOST: localhost 
+          DATABASE_USER: user
+          DATABASE_PASSWORD: password
+          DATABASE_NAME: relaydb
+          DATABASE_PORT: 5432 
           
-          # Set dummy secrets for JWT, otherwise your app will fail
           ACCESS_TOKEN_SECRET: test_access_secret_12345
           REFRESH_TOKEN_SECRET: test_refresh_secret_12345
 
@@ -89,4 +119,3 @@ jobs:
           file: ./Dockerfile.server
           load: true 
           tags: relay-app:latest
-
