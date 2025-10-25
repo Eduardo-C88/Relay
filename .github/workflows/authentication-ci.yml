@@ -63,8 +63,11 @@ jobs:
       - name: Run Unit and Integration Tests (Integrated Server Startup)
         run: |
           # 1. Start Auth Server (3000) and App Server (3001) in the background.
-          # IMPORTANT: We use 'node' directly to bypass 'nodemon' and its file-watching logic
-          # which was causing the "Cannot find module '.../index.js'" error.
+          # Navigate to the directory containing the server files (e.g., 'src')
+          # Replace 'src' with the actual directory name if different
+          cd src 
+          
+          # IMPORTANT: The file names here must be correct relative to the new CWD ('src')
           node authServer.js > auth.log 2>&1 &
           AUTH_PID=$!
           node server.js > app.log 2>&1 &
