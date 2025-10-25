@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx (Essential for caching)
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
@@ -27,7 +27,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/relay-auth
-          tags: latest
+          tags: |
+            # Use short Git SHA for unique version tag (CRITICAL for K8s deployment updates)
+            type=sha,format={{sha}},prefix=
+            # Tag 'latest' ONLY for the main branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push Auth Server
         uses: docker/build-push-action@v6
@@ -37,6 +41,9 @@ jobs:
           push: true
           tags: ${{ steps.meta-auth.outputs.tags }}
           labels: ${{ steps.meta-auth.outputs.labels }}
+          # 1. ADD Caching: Pull previous images to reuse layers
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/relay-auth:latest
+          cache-to: type=inline
 
       # ---------- APP SERVER ----------
       - name: Extract metadata (App)
@@ -44,7 +51,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/relay-app
-          tags: latest
+          tags: |
+            # Use short Git SHA for unique version tag (CRITICAL for K8s deployment updates)
+            type=sha,format={{sha}},prefix=
+            # Tag 'latest' ONLY for the main branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push App Server
         uses: docker/build-push-action@v6
@@ -54,6 +65,9 @@ jobs:
           push: true
           tags: ${{ steps.meta-app.outputs.tags }}
           labels: ${{ steps.meta-app.outputs.labels }}
+          # 2. ADD Caching: Pull previous images to reuse layers
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/relay-app:latest
+          cache-to: type=inline
 
       - name: Logout from Docker Hub
         run: docker logout

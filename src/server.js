@@ -416,6 +416,11 @@ app.get('/universities/:id/courses', async (req, res) => {
 
 // --- Server Startup ---
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-})
+// Only run the server (app.listen) if this file is executed directly
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    })
+}
+
+module.exports = app;

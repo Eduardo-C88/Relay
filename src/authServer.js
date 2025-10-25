@@ -90,4 +90,15 @@ app.post('/auth/login', async (req, res) => {
     res.json({ accessToken: accessToken, refreshToken: refreshToken });
 })
 
-app.listen(4000)
+// --- Server Startup ---
+const PORT = 4000;
+
+// Only run the server (app.listen) if this file is executed directly
+// This prevents the server from starting when it's imported by tests
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    })
+}
+
+module.exports = app;

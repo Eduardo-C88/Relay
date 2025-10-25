@@ -10,9 +10,38 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    # --- ADD THIS 'services' BLOCK ---
+    # This block creates a PostgreSQL database container for this job to use
+    services:
+      postgres:
+        image: postgres:15
+        # Set environment variables for the service container
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: relaydb
+        ports:
+          # Maps port 5432 in the service container to port 5432 on the runner host
+          - 5432:5432
+        # Add a health check to wait until Postgres is ready
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        id: node_cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -22,8 +51,39 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Auth Server image
-        run: docker build -t relay-auth:latest -f Dockerfile.auth .
+      - name: Run Unit and Integration Tests
+        # --- ADD THIS 'env' BLOCK ---
+        # Set environment variables for the 'npm test' step
+        # These tell your app how to connect to the 'services.postgres' container
+        run: npm test
+        env:
+          DATABASE_HOST: localhost # The service container is mapped to localhost on the runner
+          DATABASE_USER: user
+          DATABASE_PASSWORD: password
+          DATABASE_NAME: relaydb
+          DATABASE_PORT: 5432 # Must match the port mapping above
+          
+          # Set dummy secrets for JWT, otherwise your app will fail
+          ACCESS_TOKEN_SECRET: test_access_secret_12345
+          REFRESH_TOKEN_SECRET: test_refresh_secret_12345
 
+      # (Docker build steps are unchanged)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build Auth Server image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.auth
+          load: true 
+          tags: relay-auth:latest 
+          
       - name: Build App Server image
-        run: docker build -t relay-app:latest -f Dockerfile.server .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.server
+          load: true 
+          tags: relay-app:latest
+
