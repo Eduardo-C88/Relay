@@ -29,7 +29,7 @@ jobs:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/relay-auth
           tags: |
             # Use short Git SHA for unique version tag (CRITICAL for K8s deployment updates)
-            type=sha,format={{sha}},prefix=
+            type=sha,format=short,prefix=
             # Tag 'latest' ONLY for the main branch
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
