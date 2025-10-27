@@ -1,0 +1,89 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: app-server-hpa
+  namespace: relay
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-server # Alvo é o seu Deployment 'app-server'
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50 # Tenta manter a utilização média de CPU em 50%
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70 # Tenta manter a utilização média de Memória em 70%
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+    scaleUp:
+      # Tempo de espera entre a última ação de scale-up e a próxima decisão de scale-up.
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Pods
+        value: 2 # Opção A: Adicionar 2 Pods fixos (máximo por período)
+        periodSeconds: 60
+      - type: Percent
+        value: 100 # Opção B: Adicionar 100% das réplicas atuais (o que for maior)
+        periodSeconds: 60
+      selectPolicy: Max # O HPA escolhe a política que permite o maior número de Pods a serem adicionados.
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: auth-server-hpa
+  namespace: relay
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: auth-server # Alvo é o seu Deployment 'auth-server'
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70 # Tenta manter a utilização média de CPU em 70%
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70 # Tenta manter a utilização média de Memória em 70%
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+    scaleUp:
+      # Tempo de espera entre a última ação de scale-up e a próxima decisão de scale-up.
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Pods
+        value: 2 # Opção A: Adicionar 2 Pods fixos (máximo por período)
+        periodSeconds: 60
+      - type: Percent
+        value: 100 # Opção B: Adicionar 100% das réplicas atuais (o que for maior)
+        periodSeconds: 60
+      selectPolicy: Max # O HPA escolhe a política que permite o maior número de Pods a serem adicionados.

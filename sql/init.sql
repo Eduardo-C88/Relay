@@ -1,4 +1,4 @@
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
   "id" serial PRIMARY KEY,
   "name" varchar(100),
   "email" varchar(150) UNIQUE,
@@ -13,12 +13,12 @@ CREATE TABLE "users" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "roles" (
+CREATE TABLE IF NOT EXISTS "roles" (
   "id" serial PRIMARY KEY,
   "name" varchar(30)
 );
 
-CREATE TABLE "universities" (
+CREATE TABLE IF NOT EXISTS "universities" (
   "id" serial PRIMARY KEY,
   "name" varchar(150),
   "location" varchar(150),
@@ -26,19 +26,19 @@ CREATE TABLE "universities" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "courses" (
+CREATE TABLE IF NOT EXISTS "courses" (
   "id" serial PRIMARY KEY,
   "university_id" int,
   "name" varchar(150)
 );
 
-CREATE TABLE "categories" (
+CREATE TABLE IF NOT EXISTS "categories" (
   "id" serial PRIMARY KEY,
   "name" varchar(100),
   "description" text
 );
 
-CREATE TABLE "resources" (
+CREATE TABLE IF NOT EXISTS "resources" (
   "id" serial PRIMARY KEY,
   "owner_id" int,
   "category_id" int,
@@ -49,18 +49,18 @@ CREATE TABLE "resources" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "statuses" (
+CREATE TABLE IF NOT EXISTS "statuses" (
   "id" serial PRIMARY KEY,
   "name" varchar(30)
 );
 
-CREATE TABLE "resource_images" (
+CREATE TABLE IF NOT EXISTS "resource_images" (
   "id" serial PRIMARY KEY,
   "resource_id" int,
   "image_url" varchar(255)
 );
 
-CREATE TABLE "borrowings" (
+CREATE TABLE IF NOT EXISTS "borrowings" (
   "id" serial PRIMARY KEY,
   "resource_id" int,
   "borrower_id" int,
@@ -71,7 +71,7 @@ CREATE TABLE "borrowings" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "purchases" (
+CREATE TABLE IF NOT EXISTS "purchases" (
   "id" serial PRIMARY KEY,
   "resource_id" int,
   "buyer_id" int,
@@ -81,7 +81,7 @@ CREATE TABLE "purchases" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "reviews" (
+CREATE TABLE IF NOT EXISTS "reviews" (
   "id" serial PRIMARY KEY,
   "reviewer_id" int,
   "reviewed_id" int,
@@ -91,7 +91,7 @@ CREATE TABLE "reviews" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "reports" (
+CREATE TABLE IF NOT EXISTS "reports" (
   "id" serial PRIMARY KEY,
   "reporter_id" int,
   "reported_user_id" int,
@@ -100,7 +100,7 @@ CREATE TABLE "reports" (
   "created_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "requests" (
+CREATE TABLE IF NOT EXISTS "requests" (
   "id" serial PRIMARY KEY,
   "requester_id" int,
   "title" varchar(150),
@@ -225,11 +225,11 @@ VALUES
 ('Admin User', 'admin@example.com', 'hashed_pw_admin', NULL, NULL, 999, 'System HQ', 0, 0, 1);
 
 -- RESOURCES
-INSERT INTO resources (owner_id, category_id, title, description, status_id)
+INSERT INTO resources (owner_id, category_id, title, description, status_id, price)
 VALUES
-(1, 1, 'Intro to Algorithms', 'A clean copy of CLRS 3rd edition.', 1),
-(2, 2, 'Texas Instruments TI-84 Calculator', 'Works perfectly, minor scratches.', 1),
-(3, 3, 'IKEA Study Desk', 'Light wood desk, great for dorm rooms.', 1);
+(1, 1, 'Intro to Algorithms', 'A clean copy of CLRS 3rd edition.', 1, 60.00),
+(2, 2, 'Texas Instruments TI-84 Calculator', 'Works perfectly, minor scratches.', 1, 50.00),
+(3, 3, 'IKEA Study Desk', 'Light wood desk, great for dorm rooms.', 1, 80.00);
 
 -- RESOURCE IMAGES
 INSERT INTO resource_images (resource_id, image_url) VALUES

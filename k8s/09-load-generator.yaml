@@ -1,0 +1,37 @@
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: load-generator
+      namespace: relay
+    spec:
+      replicas: 16 # Começamos com 1 gerador de carga
+      selector:
+        matchLabels:
+          app: load-generator
+      template:
+        metadata:
+          labels:
+            app: load-generator
+        spec:
+          containers:
+          - name: load-generator
+            image: busybox:1.36 # Imagem leve com ferramentas de rede
+            # Comando que faz um loop infinito, enviando requests para o app-service
+            # via o DNS interno do Kubernetes (app-service.relay.svc.cluster.local)
+            # no endpoint /resources
+            command: ["/bin/sh", "-c"]
+            args:
+              - >
+                while true; do
+                  wget -q -O- http://app-service.relay.svc.cluster.local:3000/resources;
+                done
+            # Definir resources baixos para o gerador em si
+            resources:
+              requests:
+                cpu: "50m"
+                memory: "50Mi"
+              limits:
+                cpu: "100m"
+                memory: "100Mi"
+
+    

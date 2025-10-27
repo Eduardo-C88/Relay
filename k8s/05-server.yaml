@@ -20,6 +20,13 @@ spec:
           image: ed18c/relay-app:latest
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: "200m"     # Requisição base de 0.2 CPU
+              memory: "256Mi" # Requisição base de 256 MiB
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           env:
             - name: ACCESS_TOKEN_SECRET
               valueFrom:
