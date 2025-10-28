@@ -170,32 +170,52 @@ check_error "Waiting for Auth Server deployment"
 
 log "Core application components are deployed and ready!"
 
-# --- 4. ACCESS INSTRUCTIONS (Improved with Hosts & Tunnel Info) ---
+# --- 4. ACCESS INSTRUCTIONS (Revised with Windows Path) ---
 log "4. Minikube Access Configuration and Hosts File Update"
 
 MINIKUBE_IP=$(minikube ip)
+LOOPBACK_IP="127.0.0.1" # Standard loopback address for minikube tunnel
 echo "Minikube IP detected: $MINIKUBE_IP"
 echo ""
 
-# 4.1 Hosts File Update (Primary Method)
+# 4.1 Hosts File Update (Crucial Step)
 echo -e "------------------------------------------------------------------------------------------------------"
-echo -e "\033[33mACTION REQUIRED: Update Host file (Method 1: Minikube IP)\033[0m"
-echo -e "To ensure Ingress works correctly, you must map the Minikube IP to \033[36m$INGRESS_HOST\033[0m."
-echo -e "Run the following command (requires sudo) to append the entry to /etc/hosts:"
-echo -e "------------------------------------------------------------------------------------------------------"
-echo -e "  \033[35msudo sh -c 'echo \"$MINIKUBE_IP $INGRESS_HOST\" >> /etc/hosts'\033[0m"
+echo -e "\033[33mACTION REQUIRED: Update Host file\033[0m"
+echo -e "To ensure Ingress works correctly, you \033[1mmust\033[0m map the IP address to \033[36m$INGRESS_HOST\033[0m."
+echo ""
+echo -e "The hosts file location is:"
+echo -e " \033[36m- Linux/macOS: /etc/hosts\033[0m"
+echo -e " \033[36m- Windows: C:\\Windows\\System32\\drivers\\etc\\hosts\033[0m"
+echo ""
+
+echo -e "CHOOSE YOUR ACCESS METHOD (and run the corresponding command with \033[1mAdministrator/root\033[0m privileges):"
+echo ""
+
+# 4.1a Method 1: Direct Minikube IP (No tunnel needed)
+echo -e "\033[32m-> Method A: Using Minikube IP (if NOT running 'minikube tunnel')\033[0m"
+echo -e "   - Required Entry: \033[35m$MINIKUBE_IP $INGRESS_HOST\033[0m"
+echo -e "   - Linux/macOS Command: \033[35msudo sh -c 'echo \"$MINIKUBE_IP $INGRESS_HOST\" >> /etc/hosts'\033[0m"
+echo -e "   - Windows (PowerShell as Admin): \033[35mAdd-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"`n$MINIKUBE_IP $INGRESS_HOST\"\033[0m"
+echo ""
+
+# 4.1b Method 2: Loopback IP with Tunnel (Recommended for Minikube Ingress)
+echo -e "\033[32m-> Method B: Using 127.0.0.1 (RECOMMENDED - requires 'minikube tunnel')\033[0m"
+echo -e "   - Required Entry: \033[35m$LOOPBACK_IP $INGRESS_HOST\033[0m"
+echo -e "   - Linux/macOS Command: \033[35msudo sh -c 'echo \"$LOOPBACK_IP $INGRESS_HOST\" >> /etc/hosts'\033[0m"
+echo -e "   - Windows (PowerShell as Admin): \033[35mAdd-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"`n$LOOPBACK_IP $INGRESS_HOST\"\033[0m"
 echo -e "------------------------------------------------------------------------------------------------------"
 echo ""
 
-# 4.2 Minikube Tunnel (Alternative Method)
-log "4.2 Alternative Access (Method 2: minikube tunnel)"
-echo "If updating /etc/hosts is challenging, you can use 'minikube tunnel' in a separate terminal."
-echo "This requires elevated permissions and keeps running, but it ensures external access to your Ingress:"
-echo -e "   \033[32mminikube tunnel\033[0m"
+
+# 4.2 Minikube Tunnel Reminder
+log "4.2 Minikube Tunnel (If using Method B)"
+echo "If you chose Method B (127.0.0.1), you must run 'minikube tunnel' in a separate, elevated terminal:"
+echo -e "   \033[32mminikube tunnel\033[0m"
 echo ""
-echo "After using either method, access your endpoints via:"
-echo "  - API: http://$INGRESS_HOST/api/your-route"
-echo "  - Auth: http://$INGRESS_HOST/auth/your-route"
+
+echo "After completing the Hosts file update AND ensuring 'minikube tunnel' is running (if using Method B), access your endpoints via:"
+echo "  - API: http://$INGRESS_HOST/api/your-route"
+echo "  - Auth: http://$INGRESS_HOST/auth/your-route"
 echo "------------------------------------------------------------------------------------------------------"
 
 
