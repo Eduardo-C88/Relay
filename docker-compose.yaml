@@ -13,7 +13,9 @@ services:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   auth-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
     container_name: relay-auth
     command: node src/authServer.js
     env_file: .env
@@ -23,7 +25,9 @@ services:
       - db
 
   api-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     container_name: relay-api
     command: node src/server.js
     env_file: .env
