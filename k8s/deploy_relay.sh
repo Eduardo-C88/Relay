@@ -195,14 +195,28 @@ echo ""
 echo -e "\033[32m-> Method A: Using Minikube IP (if NOT running 'minikube tunnel')\033[0m"
 echo -e "   - Required Entry: \033[35m$MINIKUBE_IP $INGRESS_HOST\033[0m"
 echo -e "   - Linux/macOS Command: \033[35msudo sh -c 'echo \"$MINIKUBE_IP $INGRESS_HOST\" >> /etc/hosts'\033[0m"
-echo -e "   - Windows (PowerShell as Admin): \033[35mAdd-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"`n$MINIKUBE_IP $INGRESS_HOST\"\033[0m"
+# echo -e "   - Windows (PowerShell as Admin): \033[35mAdd-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"`n$MINIKUBE_IP $INGRESS_HOST\"\033[0m"
+CMD_MK_STRING="Add-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"$MINIKUBE_IP $INGRESS_HOST\""
+
+# Use printf to separate the prefix, the color, and the literal command
+printf "   - Windows (PowerShell as Admin): "
+printf "\033[35m"  # Start magenta color
+printf "%s" "$CMD_MK_STRING" # Print the literal command string
+printf "\033[0m\n" # Reset color and add a final newline
 echo ""
 
 # 4.1b Method 2: Loopback IP with Tunnel (Recommended for Minikube Ingress)
 echo -e "\033[32m-> Method B: Using 127.0.0.1 (RECOMMENDED - requires 'minikube tunnel')\033[0m"
 echo -e "   - Required Entry: \033[35m$LOOPBACK_IP $INGRESS_HOST\033[0m"
 echo -e "   - Linux/macOS Command: \033[35msudo sh -c 'echo \"$LOOPBACK_IP $INGRESS_HOST\" >> /etc/hosts'\033[0m"
-echo -e "   - Windows (PowerShell as Admin): \033[35mAdd-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"`n$LOOPBACK_IP $INGRESS_HOST\"\033[0m"
+# echo -e "   - Windows (PowerShell as Admin): \033[35mAdd-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"`n$LOOPBACK_IP $INGRESS_HOST\"\033[0m"
+CMD_LOCAL_STRING="Add-Content -Path C:\\Windows\\System32\\drivers\\etc\\hosts -Value \"$LOOPBACK_IP $INGRESS_HOST\""
+
+# Use printf to separate the prefix, the color, and the literal command
+printf "   - Windows (PowerShell as Admin): "
+printf "\033[35m"  # Start magenta color
+printf "%s" "$CMD_LOCAL_STRING" # Print the literal command string
+printf "\033[0m\n" # Reset color and add a final newline
 echo -e "------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -224,8 +238,8 @@ log "5. Useful Commands for Verification"
 echo -e "- Check overall status:              \033[32mkubectl get all -n $NAMESPACE\033[0m"
 echo -e "- Watch pods initialize:             \033[32mkubectl get pods -n $NAMESPACE -w\033[0m"
 echo -e "- Check Horizontal Pod Autoscalers:  \033[32mkubectl get hpa -n $NAMESPACE\033[0m"
-echo -e "- View HPA pods:                     \033[32mkubectl kubectl get hpa app-server-hpa -n relay -w\033[0m"
-echo -e "- Port Database to localhost         \033[32mkubectl kubectl port-forward -n relay svc/postgresql-service 5432:5432\033[0m"
+echo -e "- View HPA pods:                     \033[32mkubectl get hpa app-server-hpa -n relay -w\033[0m"
+echo -e "- Port Database to localhost         \033[32mkubectl port-forward -n relay svc/postgresql-service 5432:5432\033[0m"
 echo ""
 echo -e "- Enable/Start Load Generator:       \033[32mkubectl apply -f $K8S_DIR/09-load-generator.yaml\033[0m"
 echo -e "- Stop/Remove Load Generator:        \033[32mkubectl delete -f $K8S_DIR/09-load-generator.yaml\033[0m (This removes the deployment and stops the traffic.)"
