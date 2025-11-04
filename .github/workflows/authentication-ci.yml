@@ -62,32 +62,32 @@ jobs:
       
       - name: Run Unit and Integration Tests (Integrated Server Startup)
         run: |
-          # 1. Start Auth Server (4000) and App Server (3000) in the background.
-          # Navigate to the directory containing the server files (e.g., 'src')
-          # Replace 'src' with the actual directory name if different
-          cd src 
+          # # 1. Start Auth Server (4000) and App Server (3000) in the background.
+          # # Navigate to the directory containing the server files (e.g., 'src')
+          # # Replace 'src' with the actual directory name if different
+          # cd src 
           
-          # IMPORTANT: The file names here must be correct relative to the new CWD ('src')
-          node authServer.js > auth.log 2>&1 &
-          AUTH_PID=$!
-          node server.js > app.log 2>&1 &
-          APP_PID=$!
+          # # IMPORTANT: The file names here must be correct relative to the new CWD ('src')
+          # node authServer.js > auth.log 2>&1 &
+          # AUTH_PID=$!
+          # node server.js > app.log 2>&1 &
+          # APP_PID=$!
           
-          # 2. Use 'trap' to ensure the background servers are killed when this step exits, 
-          # regardless of success or failure (critical for cleanup).
-          trap 'kill $AUTH_PID $APP_PID' EXIT
+          # # 2. Use 'trap' to ensure the background servers are killed when this step exits, 
+          # # regardless of success or failure (critical for cleanup).
+          # trap 'kill $AUTH_PID $APP_PID' EXIT
           
-          # 3. Wait for servers to be healthy. We use a longer timeout (90s).
-          echo "Waiting for Auth (4000) and App (3000) servers..."
-          npx wait-on tcp:4000 tcp:3000 -t 90000 || { 
-            echo "--- Server Startup Timeout Failed ---"; 
-            echo "--- Auth Server Log (Port 4000) ---"; cat auth.log; 
-            echo "--- App Server Log (Port 3000) ---"; cat app.log; 
-            exit 1; 
-          }
-          echo "Servers ready. Running tests."
+          # # 3. Wait for servers to be healthy. We use a longer timeout (90s).
+          # echo "Waiting for Auth (4000) and App (3000) servers..."
+          # npx wait-on tcp:4000 tcp:3000 -t 90000 || { 
+          #   echo "--- Server Startup Timeout Failed ---"; 
+          #   echo "--- Auth Server Log (Port 4000) ---"; cat auth.log; 
+          #   echo "--- App Server Log (Port 3000) ---"; cat app.log; 
+          #   exit 1; 
+          # }
+          # echo "Servers ready. Running tests."
 
-          # 4. Run the tests. If the tests fail, the exit code will be preserved.
+          # # 4. Run the tests. If the tests fail, the exit code will be preserved.
           npm test
           
         env:
