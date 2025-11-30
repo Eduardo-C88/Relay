@@ -1,0 +1,102 @@
+require('dotenv').config();
+
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const pool = require('../../src/database');
+
+const app = express();
+app.use(express.json());
+
+const { generateAccessToken } = require('../middleware/authMiddleware');
+
+let refreshTokens = []
+
+// Health check endpoint for Kubernetes probes
+exports.healt=(req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString()
+  });
+};
+
+
+exports.register=async (req, res) => {
+    const { name, email, password } = req.body;
+  
+    if (!name || !email || !password)
+      return res.status(400).send('Name, email, and password required');
+  
+    try {
+      //const hashed = await bcrypt.hash(password, 10);
+      const hashed = password; // For simplicity, not hashing in this example
+      await pool.query(
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
+        [name, email, hashed]
+      );
+      res.status(201).send('User registered');
+    } catch (err) {
+      console.error(err);
+      if (err.code === '23505') {
+        return res.status(409).send('Email already exists');
+      }
+      res.sendStatus(500);
+    }
+  };
+
+exports.refreshToken = async (req, res) => {
+    const refreshToken = req.body.token
+    if(refreshToken == null) return res.sendStatus(401)
+
+    if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if(err) return res.sendStatus(403)
+        const accessToken = generateAccessToken({ email: user.email })
+        res.json({ accessToken: accessToken })
+    })
+};
+
+exports.logout=async (req, res) => {
+    refreshTokens = refreshTokens.filter(token => token !== req.body.token)
+    res.sendStatus(204)
+};
+
+exports.login = async (req, res) => {
+    // Authenticate User
+    const { email, password } = req.body;
+
+    // 1. Find user
+    const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = userResult.rows[0];
+    if (!user) return res.status(400).json({ message: 'User not found' });
+  
+    // 2. Verify password
+    //const valid = await bcrypt.compare(password, user.password);
+    const valid = password === user.password; // For simplicity, not hashing in this example
+    if (!valid) return res.status(403).json({ message: 'Invalid password' });
+
+    // 3. Generate tokens
+    const payload = { id: user.id, email: user.email };
+
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
+    
+    refreshTokens.push(refreshToken);
+    // Store refreshToken in DB or memory
+
+    res.json({ accessToken: accessToken, refreshToken: refreshToken });
+};
+
+// --- Server Startup ---
+const PORT = 4000;
+
+// Only run the server (app.listen) if this file is executed directly
+// This prevents the server from starting when it's imported by tests
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    })
+}
+
+module.exports = app;
